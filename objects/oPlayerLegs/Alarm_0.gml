@@ -1,0 +1,2 @@
+/// @description canMove
+canMove = true;
