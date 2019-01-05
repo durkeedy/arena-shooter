@@ -14,4 +14,5 @@ if(gun != noone && gun.canShoot)
 	}
 	gun.canShoot = false;
 	gun.alarm[0] = gun.reload;
+	client_send_shot(oRegPaint, proj.tox, proj.toy, proj.range);
 }

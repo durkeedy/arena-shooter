@@ -27,6 +27,7 @@ if(canMove)
 		y -= 16;
 		canMove = false;
 		alarm[0] = spd;
+		client_send_movement(NORTH);
 	}
 	else if(keyboard_check(ord("S")) && !place_meeting(x, y, oTerrain))
 	{
@@ -49,6 +50,7 @@ if(canMove)
 		y += 16;
 		canMove = false;
 		alarm[0] = spd;
+		client_send_movement(SOUTH);
 	}
 	else if(keyboard_check(ord("A")) && !place_meeting(x, y, oTerrain))
 	{
@@ -71,6 +73,7 @@ if(canMove)
 		x -= 16;
 		canMove = false;
 		alarm[0] = spd;
+		client_send_movement(WEST);
 	}
 	else if(keyboard_check(ord("D")) && !place_meeting(x, y, oTerrain))
 	{
@@ -93,6 +96,7 @@ if(canMove)
 		x += 16;
 		canMove = false;
 		alarm[0] = spd;
+		client_send_movement(EAST);
 	}
 	else
 	{

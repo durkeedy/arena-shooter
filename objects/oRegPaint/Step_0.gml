@@ -13,5 +13,5 @@ else if(point_distance(fromx, fromy, x, y) >= range)
 }
 else
 {
-	speed = point_distance(x, y, tox, toy) / clamp(speed, point_distance(x, y, tox, toy), 10) * basespd;
+	speed = (range - point_distance(fromx, fromy, x, y)) / range * basespd + 1;
 }
