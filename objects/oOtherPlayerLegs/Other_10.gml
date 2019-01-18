@@ -8,4 +8,4 @@ if(image_index > 4)
 {
 	image_index = 0;
 }
-y -= 16;
+//y -= 16;

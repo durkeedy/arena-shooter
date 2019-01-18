@@ -5,3 +5,4 @@ image_speed = 0;
 torso.depth = depth - 1;
 name = noone;
 number = noone;
+team = noone;

@@ -14,11 +14,12 @@ while(true)
 			if(other_name == name)
 			{
 				number = buffer_read(read_buffer, buffer_u16);
+				player.team = number; //CHANGE THIS WHEN GAME MODES ARE ADDED
 			}
 			else
 			{
 				var other_number = buffer_read(read_buffer, buffer_u16);
-				oMultiplayerController.clients[other_number] = instance_create_layer(window_get_width()/2, window_get_height()/2, "Players", oOtherPlayerLegs);
+				oMultiplayerController.clients[other_number] = instance_create_layer(112, 112, "Players", oOtherPlayerLegs);
 				oMultiplayerController.clients[other_number].name = other_name;
 				oMultiplayerController.clients[other_number].number = other_number;
 				//ds_queue_enqueue(clientnumstosync, other_number);
@@ -37,7 +38,7 @@ while(true)
 			var sender_number = buffer_read(read_buffer, buffer_u16);
 			//var size = buffer_tell(read_buffer);
 			//show_debug_message(string(size));
-			oMultiplayerController.clients[sender_number] = instance_create_layer(window_get_width()/2, window_get_height()/2, "Players", oOtherPlayerLegs);
+			oMultiplayerController.clients[sender_number] = instance_create_layer(112, 112, "Players", oOtherPlayerLegs);
 			oMultiplayerController.clients[sender_number].name = sender_name;
 			oMultiplayerController.clients[sender_number].number = sender_number;
 		break;
@@ -45,9 +46,11 @@ while(true)
 		///Receive move from other players 1002
 		case RECEIVE_MOVE:
 			var dir = buffer_read(read_buffer, buffer_u16);
+			var xx = buffer_read(read_buffer, buffer_u16);
+			var yy = buffer_read(read_buffer, buffer_u16);
 			var sender_num = buffer_read(read_buffer, buffer_u16);
 			
-			move_other_player(sender_num, dir);
+			move_other_player(sender_num, dir, xx, yy);
 		break;
 		
 		//Other client disconnected 1003
@@ -73,9 +76,10 @@ while(true)
 			var tox = buffer_read(read_buffer, buffer_u16);
 			var toy = buffer_read(read_buffer, buffer_u16);
 			var range = buffer_read(read_buffer, buffer_u16);
+			var instance = buffer_read(read_buffer, buffer_u32);
 			var shot_by = buffer_read(read_buffer, buffer_u16);
 			
-			create_shot_from_player(paint, tox, toy, range, shot_by);
+			create_shot_from_player(paint, tox, toy, range, instance, shot_by);
 		
 		break;
            
@@ -93,18 +97,47 @@ while(true)
             break;
         }
 
-        //// 1008 = Recive Players Online
-        //case 1008:
-        //{            
-        //    //Recive player online data.
-        //    var players_online = buffer_read(read_buffer, buffer_s32);
+        /// Client splatted 1008
+        case RECEIVE_SPLATTED:
+        {            
+            //Recive player online data.
+            var splatted = buffer_read(read_buffer, buffer_u16);
+			var team = buffer_read(read_buffer, buffer_u16);
+			var instance = buffer_read(read_buffer, buffer_u32);
+			var splatter = buffer_read(read_buffer, buffer_u16);
                
-        //    //Update global.
-        //    global.players_online = players_online;
-        //    break;
-        //}
-           
-        //// 1009 = Disconnected From Server
+            simulate_collision(splatted, team, instance, splatter);
+            break;
+        }
+		
+		/// Respawn client 1010
+		case RECEIVE_RESPAWN:
+			//var client_to_spawn = buffer_read(read_buffer, buffer_u16);
+			respawn_me();
+		break;
+		
+		/// Game ended 1011
+        case RECEIVE_GAME_OVER:
+			//read out game results when they are sent from server (later)
+			//reset all players
+			reset_in_game_players();
+			clean_playing_field();
+		break;
+		
+		/// Player respawned or was automatically repositioned 1012
+        case RECEIVE_POSITION:
+			//read out game results when they are sent from server (later)
+			//reset all players
+			var player_num = buffer_read(read_buffer, buffer_u16);
+			var xx = buffer_read(read_buffer, buffer_u16);
+			var yy = buffer_read(read_buffer, buffer_u16);
+			update_player_position(player_num, xx, yy);
+		break;
+		  //Update global.
+            //global.players_online = players_online;
+        
+		
+		//// 1009 = Disconnected From Server
         //case 1009:
         //{
         //    //Returns to main menu.
